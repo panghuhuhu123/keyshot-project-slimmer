@@ -13,7 +13,7 @@ from tkinterdnd2 import DND_FILES, TkinterDnD
 
 import bip_cleaner as cleaner
 
-VERSION = '1.9'
+VERSION = '1.10'
 ASSETS = Path(__file__).resolve().parent / 'assets'
 BG = '#f5f7fa'
 PAPER = '#ffffff'

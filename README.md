@@ -5,7 +5,7 @@
 ## 下载和使用
 
 1. 去 [GitHub Releases](https://github.com/panghuhuhu123/keyshot-project-slimmer/releases/latest)，下载 Windows x64 ZIP 并解压。
-2. 双击 `KeyShot 工程瘦身 1.9.exe`，把 `.bip`、`.ksp` 或包含工程的文件夹拖入窗口。
+2. 双击 `KeyShot 工程瘦身 1.10.exe`，把 `.bip`、`.ksp` 或包含工程的文件夹拖入窗口。
 3. 点「分析文件」查看预计可释放空间，再点「生成瘦身副本」。默认将副本保存到源文件旁，文件名带 `_瘦身`。
 
 操作细节见 [使用说明](使用说明.md)。

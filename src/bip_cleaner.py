@@ -26,6 +26,7 @@ STUDIO = re.compile(rb'\?\)....\x16\x00\x00\x00lux\.studios\.studionodestudio_no
 STUDIO_ITEM = re.compile(rb'\?"....\x1a\x00\x00\x00lux\.studios\.studioitemnode', re.S)
 STUDIO_REF = re.compile(rb'\x1d\x0c\x02\x00\x00\x00itemtype\x1d\x0c(....)studioIdA\x00', re.S)
 IMAGE_STYLE = re.compile(rb'\x1d\x10....imageStyleIdA\x00', re.S)
+MULTI_MATERIAL_IDS = re.compile(rb'\x7e(....)\x10\x00\x00\x00multiMaterialIds', re.S)
 PNG_MARKER = b'MIlQTkcNChoK'
 CHUNK = 4 * 1024 * 1024
 EMPTY_FRAME_HEADER = b'\x08\x00\x00\x00\x00\x00\x00\x00'
@@ -158,6 +159,17 @@ def find_scene(data):
     return candidates[0]
 
 
+def valid_preview_position(data, node_end, field_start):
+    if 0 < field_start - node_end < 512:
+        return True
+    # A length-prefixed array of 32-bit material IDs can extend past 512 bytes.
+    for field in MULTI_MATERIAL_IDS.finditer(data, node_end, min(node_end + 512, field_start)):
+        length = int.from_bytes(field[1], 'little') - (4 + len(b'multiMaterialIds'))
+        if length > 0 and length % 4 == 0 and field.end() + length == field_start:
+            return True
+    return False
+
+
 def select_duplicates(data, start, end, check):
     nodes = list(STUDIO.finditer(data, start, end))
     offsets = [node.start() for node in nodes]
@@ -188,7 +200,7 @@ def select_duplicates(data, start, end, check):
         size = struct.unpack_from('<I', data, pos-4)[0]
         field_end = pos + size + 7
         node_end = offsets[index+1] if index+1 < len(offsets) else end
-        if (index in seen_nodes or not 0 < field_start-node.end() < 512
+        if (index in seen_nodes or not valid_preview_position(data, node.end(), field_start)
                 or data[field_start] != 0x2e
                 or not 50 < size < 20_000_000 or size % 4
                 or field_end >= node_end
