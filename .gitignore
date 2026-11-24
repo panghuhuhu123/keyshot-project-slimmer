@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+.build/
+.build-deps/
+build/
+dist/
+*.spec
+*.bip
+*.ksp
+*.exe
